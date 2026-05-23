@@ -14,7 +14,7 @@ import cartopy.crs as ccrs
 from matplotlib.contour import QuadContourSet
 
 from pyshtools import SHCoeffs
-from pyslfp.plot import plot, create_map_figure, plot_coastline
+from pyslfp.plot import plot, plot_points, create_map_figure, plot_coastline
 
 
 @pytest.fixture(scope="module")
@@ -93,6 +93,43 @@ def test_plot_symmetric_option(sample_grid):
     finally:
         if fig:
             plt.close(fig)
+
+
+def test_plot_passes_gridlines_kwargs(sample_grid, monkeypatch):
+    """Wrapper should forward gridline options to pygeoinf's sphere helper."""
+    captured = {}
+
+    def fake_plot(*args, **kwargs):
+        captured.update(kwargs)
+        fig, ax = plt.subplots(subplot_kw={"projection": ccrs.Robinson()})
+        return ax, object()
+
+    monkeypatch.setattr("pyslfp.plot.sphere.plot", fake_plot)
+
+    ax, _ = plot(sample_grid, gridlines_kwargs={"draw_labels": False})
+
+    assert captured["gridlines_kwargs"] == {"draw_labels": False}
+    plt.close(ax.figure)
+
+
+def test_plot_points_passes_gridlines_kwargs(monkeypatch):
+    """Point plotting wrapper should forward gridline options too."""
+    captured = {}
+
+    def fake_plot_points(*args, **kwargs):
+        captured.update(kwargs)
+        fig, ax = plt.subplots(subplot_kw={"projection": ccrs.Robinson()})
+        return ax, object()
+
+    monkeypatch.setattr("pyslfp.plot.sphere.plot_points", fake_plot_points)
+
+    ax, _ = plot_points(
+        [(0.0, 0.0), (10.0, 20.0)],
+        gridlines_kwargs={"draw_labels": False},
+    )
+
+    assert captured["gridlines_kwargs"] == {"draw_labels": False}
+    plt.close(ax.figure)
 
 
 # ==================================================================== #

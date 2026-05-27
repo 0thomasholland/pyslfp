@@ -95,6 +95,18 @@ def test_plot_symmetric_option(sample_grid):
             plt.close(fig)
 
 
+def test_plot_figsize_creates_requested_figure_size(sample_grid):
+    """Wrapper should allow figure sizing without manual axis creation."""
+    fig = None
+    try:
+        ax, _ = plot(sample_grid, figsize=(9, 4), colorbar=False)
+        fig = ax.figure
+        assert np.allclose(fig.get_size_inches(), [9, 4])
+    finally:
+        if fig:
+            plt.close(fig)
+
+
 # ==================================================================== #
 #                 3. Coastline and Isolines (plot_coastline)           #
 # ==================================================================== #

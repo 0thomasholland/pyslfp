@@ -66,6 +66,7 @@ def plot(
     *,
     ax: Optional[GeoAxes] = None,
     projection: Optional[Projection] = None,
+    figsize: Optional[Tuple[float, float]] = None,
     contour: bool = False,
     cmap: str = "RdBu",
     coasts: bool = True,
@@ -90,6 +91,10 @@ def plot(
     """
     if projection is None and ax is None:
         projection = ccrs.Robinson()
+
+    if ax is None and figsize is not None:
+        _, ax = create_map_figure(figsize=figsize, projection=projection)
+        projection = None
 
     return sphere.plot(
         f,
@@ -119,6 +124,7 @@ def plot_points(
     data: Optional[List[float] | np.ndarray] = None,
     ax: Optional[GeoAxes] = None,
     projection: Optional[Projection] = None,
+    figsize: Optional[Tuple[float, float]] = None,
     cmap: str = "RdBu",
     color: str = "red",
     s: float = 20,
@@ -144,6 +150,10 @@ def plot_points(
     """
     if projection is None and ax is None:
         projection = ccrs.Robinson()
+
+    if ax is None and figsize is not None:
+        _, ax = create_map_figure(figsize=figsize, projection=projection)
+        projection = None
 
     return sphere.plot_points(
         points,
